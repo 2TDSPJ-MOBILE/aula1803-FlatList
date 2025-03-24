@@ -1,9 +1,12 @@
-import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { StyleSheet, Text, View,ImageBackground, TextInput, FlatList,Image } from 'react-native';
-import {Ionicons} from 'react-native-vector-icons'
+import { StyleSheet,View,ImageBackground, TextInput, FlatList,Dimensions, TouchableOpacity } from 'react-native';
+import { Image } from 'expo-image';
 import API_KEY from '../API_KEY';
 import axios from 'axios';
+import Cabecalho from '../Components/Cabecalho';
+
+const{width,height}=Dimensions.get("window")
+const IMAGE_WIDTH = width
 
 export default function TelaResultado({route,navigation}) {
   const escolha = route.params.escolha
@@ -17,7 +20,8 @@ export default function TelaResultado({route,navigation}) {
       const resultado = await axios.get(link,{
         params:{
           api_key: API_KEY,
-          q:text
+          q:text,
+          lang:"pt"
         }
       })
       //console.log(resultado.data.data.images)
@@ -26,47 +30,33 @@ export default function TelaResultado({route,navigation}) {
       console.log(err)
     }
   }
-
+ 
   return (
+    
     <ImageBackground 
       source={require('../../assets/BG.png')}
       style={styles.container}
     >
-      <View style={styles.cabecalho}>
-        <Ionicons 
-          name="chevron-back" 
-          size={40}
-          color="white"  
-          onPress={()=>navigation.goBack()}
-        />
-        <TextInput 
-          style={styles.textInput}
-          placeholder='Digite sua pesquisa'
-          autoCapitalize='none'
-          autoCorrect={false}
-          value={text}
-          onChangeText={(value)=>setText(value)}
-        />
-        <Ionicons 
-          name="search"
-          size={40}
-          color='white'
-          onPress={()=>solicitarDados(text)}
-        />
-      </View>
+     <Cabecalho 
+        navigation={navigation}
+        text={text}
+        setText={setText}
+        solicitarDados={solicitarDados}
+     />
 
 
       <FlatList 
         data={data}
+        numColumns={2}
         renderItem={({item})=>{
           return(
-            <Image
+            <TouchableOpacity onPress={()=>navigation.navigate("TelaDetalhes")}>
+              <Image
               style={styles.image}
-              source={{uri: item.images.preview_gif.url}}
-              
+              source={{uri: item.images.preview_gif.url}}              
             />
-            
-            
+            </TouchableOpacity>
+             
           )
         }}
       />
@@ -91,7 +81,7 @@ const styles = StyleSheet.create({
     paddingLeft:10
   },
   image:{
-    width:300,
-    height:300
+    width:IMAGE_WIDTH/2,
+    height:IMAGE_WIDTH/2
   }
 });

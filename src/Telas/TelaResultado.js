@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { StyleSheet,View,ImageBackground, Text, FlatList,Dimensions, TouchableOpacity } from 'react-native';
+import { StyleSheet,ImageBackground, FlatList,Dimensions, TouchableOpacity,Keyboard } from 'react-native';
 import { Image } from 'expo-image';
 import API_KEY from '../API_KEY';
 import axios from 'axios';
 import Cabecalho from '../Components/Cabecalho';
 import TextoInfo from '../Components/TextoInfo';
+import Loading from '../Components/Loading';
+import Error from '../Components/Error';
+
 
 const{width,height}=Dimensions.get("window")
 const IMAGE_WIDTH = width
@@ -16,9 +19,13 @@ export default function TelaResultado({route,navigation}) {
   const[text,setText] = useState('')
   const[data,setData] = useState([])
   const[showMessage,setShowMessage] = useState(true)
+  const[isLoading,setIsLoading] = useState(false)
+  const[showError,setShowError] = useState(false)
 
   const solicitarDados = async (text)=>{
+    Keyboard.dismiss()
     setShowMessage(false)
+    setIsLoading(true)
     try{
       const resultado = await axios.get(link,{
         params:{
@@ -28,9 +35,12 @@ export default function TelaResultado({route,navigation}) {
         }
       })
       //console.log(resultado.data.data.images)
+      setIsLoading(false)
       setData(resultado.data.data)
     }catch(err){
-      console.log(err)
+      //console.log(err)
+      setIsLoading(false)
+      setShowError(true)
     }
   }
  
@@ -52,7 +62,11 @@ export default function TelaResultado({route,navigation}) {
         data={data}
         numColumns={2}
         ListHeaderComponent={
-          <TextoInfo showMessage={showMessage}/>
+          <>
+            <TextoInfo showMessage={showMessage}/>
+            <Loading isLoading={isLoading}/>
+            <Error showError={showError}/>
+          </>
         }
         renderItem={({item})=>{
           return(

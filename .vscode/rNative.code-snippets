@@ -1,0 +1,17 @@
+{
+	"reactN":{
+		"prefix": "rnative",
+		"body": [
+			"import React from 'react'",
+			"import {Text} from 'react-native'",
+			"",
+			"export default function App(){",
+			"",
+			"\treturn(",
+			"\t\t<Text>Olá</Text>",
+			"\t)",
+			"}"
+		],
+		"description": "Criação padrão RN"
+	}
+}
